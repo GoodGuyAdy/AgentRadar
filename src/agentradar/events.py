@@ -1,4 +1,4 @@
-"""AgentWatch event types and schema definitions."""
+"""AgentRadar event types and schema definitions."""
 
 from __future__ import annotations
 

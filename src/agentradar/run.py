@@ -1,18 +1,17 @@
-"""AgentWatch AgentRun — context manager for tracking a single agent run."""
+"""AgentRadar AgentRun — context manager for tracking a single agent run."""
 
 from __future__ import annotations
 
 import logging
 import time
-from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any, Generator
+from typing import TYPE_CHECKING, Any
 
-from agentwatch.events import EventType, RunStatus, _new_id, _utcnow, build_event
+from agentradar.events import EventType, RunStatus, _new_id, build_event
 
 if TYPE_CHECKING:
-    from agentwatch.client import AgentWatch
+    from agentradar.client import AgentRadar
 
-logger = logging.getLogger("agentwatch")
+logger = logging.getLogger("agentradar")
 
 
 class AgentRun:
@@ -27,7 +26,7 @@ class AgentRun:
     def __init__(
         self,
         *,
-        client: "AgentWatch",
+        client: "AgentRadar",
         agent_name: str,
         run_id: str | None = None,
         input: dict[str, Any] | None = None,

@@ -1,27 +1,27 @@
-# agentwatch — Python SDK
+# agentradar — Python SDK
 
-[![PyPI version](https://badge.fury.io/py/agentwatch.svg)](https://pypi.org/project/agentwatch/)
+[![PyPI version](https://badge.fury.io/py/agentradar.svg)](https://pypi.org/project/agentradar/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**AI agent observability — track runs, LLM calls, tool calls, errors, and performance metrics in your AgentWatch dashboard.**
+**AI agent observability — track runs, LLM calls, tool calls, errors, and performance metrics in your AgentRadar dashboard.**
 
 ---
 
 ## Installation
 
 ```bash
-pip install agentwatch
+pip install agentradar
 ```
 
 ## Quick Start
 
 ```python
-from agentwatch import AgentWatch
+from agentradar import AgentRadar
 
-aw = AgentWatch(
+aw = AgentRadar(
     api_key="aw_live_your_key_here",
-    endpoint="http://localhost:8000",  # your AgentWatch platform URL
+    endpoint="http://localhost:8000",  # your AgentRadar platform URL
 )
 
 with aw.start_run(
@@ -47,15 +47,15 @@ with aw.start_run(
 
 ## API Key Configuration
 
-Get your API key from the AgentWatch dashboard under **Settings → API Keys**.
+Get your API key from the AgentRadar dashboard under **Settings → API Keys**.
 
 ```python
 # Option 1: Pass directly
-aw = AgentWatch(api_key="aw_live_...")
+aw = AgentRadar(api_key="aw_live_...")
 
 # Option 2: Environment variable
-# export AGENTWATCH_API_KEY=aw_live_...
-aw = AgentWatch()
+# export AGENTRADAR_API_KEY=aw_live_...
+aw = AgentRadar()
 ```
 
 ## Tracking a Run
@@ -112,8 +112,8 @@ run.log_event(
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `api_key` | `$AGENTWATCH_API_KEY` | Your project API key |
-| `endpoint` | `$AGENTWATCH_ENDPOINT` or `http://localhost:8000` | AgentWatch platform URL |
+| `api_key` | `$AGENTRADAR_API_KEY` | Your project API key |
+| `endpoint` | `$AGENTRADAR_ENDPOINT` or `http://localhost:8000` | AgentRadar platform URL |
 | `timeout` | `10.0` | HTTP request timeout in seconds |
 | `max_retries` | `3` | Max retries for transient failures |
 | `batch_size` | `50` | Events per batch (auto-flush trigger) |
@@ -135,13 +135,13 @@ By default, `input` and `output` payloads are **not sent** to protect sensitive 
 
 ```python
 # Enable payload capture (only if your data is safe to transmit)
-aw = AgentWatch(api_key="...", include_payloads=True)
+aw = AgentRadar(api_key="...", include_payloads=True)
 ```
 
 ## Disabling Telemetry
 
 ```python
-aw = AgentWatch(api_key="...", enabled=False)
+aw = AgentRadar(api_key="...", enabled=False)
 ```
 
 All SDK calls become no-ops; no network requests are made.
@@ -149,7 +149,7 @@ All SDK calls become no-ops; no network requests are made.
 ## Error Handling
 
 ```python
-from agentwatch.exceptions import AuthenticationError, APIError, NetworkError
+from agentradar.exceptions import AuthenticationError, APIError, NetworkError
 
 try:
     aw.flush()
@@ -158,13 +158,13 @@ except AuthenticationError:
 except APIError as e:
     print(f"API error {e.status_code}: {e}")
 except NetworkError:
-    print("Could not reach AgentWatch backend")
+    print("Could not reach AgentRadar backend")
 ```
 
 ## Troubleshooting
 
 **`ConfigurationError: api_key is required`**
-→ Pass `api_key=` or set `AGENTWATCH_API_KEY`.
+→ Pass `api_key=` or set `AGENTRADAR_API_KEY`.
 
 **`AuthenticationError`**
 → Check that your API key is correct and hasn't been revoked.
@@ -175,15 +175,15 @@ except NetworkError:
 ## Local Development
 
 ```bash
-git clone https://github.com/agentwatch/agentwatch-python
-cd agentwatch-python
+git clone https://github.com/agentradar/agentradar-python
+cd agentradar-python
 pip install -e ".[dev]"
 pytest
 ```
 
 ## Publishing to PyPI
 
-> **Note**: Check that the `agentwatch` package name is available on PyPI before publishing.
+> **Note**: Check that the `agentradar` package name is available on PyPI before publishing.
 
 ```bash
 pip install build twine

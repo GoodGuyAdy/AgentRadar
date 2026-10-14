@@ -4,11 +4,11 @@ This example demonstrates how the SDK works end-to-end using simulated data.
 Run: python examples/simulated_agent.py
 """
 
-import random
 import time
-from agentwatch import AgentWatch
 
-aw = AgentWatch(
+from agentradar import AgentRadar
+
+aw = AgentRadar(
     api_key="aw_live_your_key_here",
     endpoint="http://localhost:8000",
     include_payloads=True,
@@ -68,7 +68,7 @@ def run_scenario(scenario: str) -> None:
 
 
 if __name__ == "__main__":
-    print("AgentWatch Simulated Agent Demo")
+    print("AgentRadar Simulated Agent Demo")
     print("=" * 40)
     for s in SCENARIOS:
         try:
@@ -76,4 +76,4 @@ if __name__ == "__main__":
             print(f"  ✓ {s} completed")
         except Exception as e:
             print(f"  ✗ {s} error: {e}")
-    print("\nAll scenarios complete. Check your AgentWatch dashboard!")
+    print("\nAll scenarios complete. Check your AgentRadar dashboard!")

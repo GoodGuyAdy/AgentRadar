@@ -1,28 +1,27 @@
-"""AgentWatch client — main entry point for the SDK."""
+"""AgentRadar client — main entry point for the SDK."""
 
 from __future__ import annotations
 
 import logging
 import threading
 import time
-from contextlib import contextmanager
-from typing import Any, Generator
+from typing import Any
 
 import httpx
 
-from agentwatch.config import Config, SDK_VERSION
-from agentwatch.exceptions import AuthenticationError, APIError, NetworkError
-from agentwatch.run import AgentRun
+from agentradar.config import Config, SDK_VERSION
+from agentradar.exceptions import AuthenticationError, APIError, NetworkError
+from agentradar.run import AgentRun
 
-logger = logging.getLogger("agentwatch")
+logger = logging.getLogger("agentradar")
 
 
-class AgentWatch:
+class AgentRadar:
     """Main SDK client.
 
     Example::
 
-        aw = AgentWatch(api_key="aw_live_...", endpoint="http://localhost:8000")
+        aw = AgentRadar(api_key="aw_live_...", endpoint="http://localhost:8000")
 
         with aw.start_run(agent_name="MyAgent", input={"q": "hello"}) as run:
             run.log_tool_call(name="search", input={"query": "hello"})
@@ -54,12 +53,12 @@ class AgentWatch:
         self._http = httpx.Client(
             headers={
                 "X-API-Key": self.config.api_key,
-                "User-Agent": f"agentwatch-python/{SDK_VERSION}",
+                "User-Agent": f"agentradar-python/{SDK_VERSION}",
                 "Content-Type": "application/json",
             },
             timeout=self.config.timeout,
         )
-        logger.debug("AgentWatch SDK initialised (endpoint=%s)", self.config.endpoint)
+        logger.debug("AgentRadar SDK initialised (endpoint=%s)", self.config.endpoint)
 
     # ------------------------------------------------------------------
     # Public interface
@@ -75,7 +74,7 @@ class AgentWatch:
     ) -> AgentRun:
         """Return an AgentRun context manager for tracking one agent run."""
         if not self.config.enabled:
-            logger.debug("AgentWatch telemetry disabled — returning no-op run.")
+            logger.debug("AgentRadar telemetry disabled — returning no-op run.")
             return _NoOpRun(client=self, agent_name=agent_name, run_id=run_id)
         return AgentRun(
             client=self,
@@ -119,7 +118,7 @@ class AgentWatch:
         url = f"{self.config.endpoint}/api/v1/events/batch"
         headers = {
             "X-API-Key": self.config.api_key,
-            "User-Agent": f"agentwatch-python/{SDK_VERSION}",
+            "User-Agent": f"agentradar-python/{SDK_VERSION}",
         }
         payload = {"events": events}
         for attempt in range(1, self.config.max_retries + 1):
@@ -127,7 +126,7 @@ class AgentWatch:
                 resp = self._http.post(url, json=payload, headers=headers)
                 if resp.status_code == 401:
                     raise AuthenticationError(
-                        "Invalid or missing API key. Check your AgentWatch API key."
+                        "Invalid or missing API key. Check your AgentRadar API key."
                     )
                 if resp.status_code == 422:
                     raise APIError(
@@ -154,7 +153,7 @@ class AgentWatch:
                 logger.debug("Retrying in %ds (attempt %d)…", wait, attempt)
                 time.sleep(wait)
 
-    def __enter__(self) -> "AgentWatch":
+    def __enter__(self) -> "AgentRadar":
         return self
 
     def __exit__(self, *_: Any) -> bool:

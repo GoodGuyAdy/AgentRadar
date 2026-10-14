@@ -3,12 +3,12 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "agentwatch"
+name = "agentradar"
 version = "0.1.0"
 description = "AI agent observability SDK — track runs, LLM calls, tool calls, and errors."
 readme = "README.md"
 license = { text = "MIT" }
-authors = [{ name = "AgentWatch", email = "sdk@agentwatch.dev" }]
+authors = [{ name = "AgentRadar", email = "sdk@agentradar.dev" }]
 keywords = ["ai", "agents", "observability", "llm", "monitoring", "tracing"]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -37,13 +37,13 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://agentwatch.dev"
-Documentation = "https://docs.agentwatch.dev"
-Repository = "https://github.com/agentwatch/agentwatch-python"
-Issues = "https://github.com/agentwatch/agentwatch-python/issues"
+Homepage = "https://agentradar.dev"
+Documentation = "https://docs.agentradar.dev"
+Repository = "https://github.com/agentradar/agentradar-python"
+Issues = "https://github.com/agentradar/agentradar-python/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/agentwatch"]
+packages = ["src/agentradar"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

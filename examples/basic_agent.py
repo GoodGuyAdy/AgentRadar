@@ -1,9 +1,9 @@
-"""Basic agent example using the AgentWatch SDK."""
+"""Basic agent example using the AgentRadar SDK."""
 # Run: python examples/basic_agent.py
 
-from agentwatch import AgentWatch
+from agentradar import AgentRadar
 
-aw = AgentWatch(
+aw = AgentRadar(
     api_key="aw_live_your_key_here",
     endpoint="http://localhost:8000",
     include_payloads=True,

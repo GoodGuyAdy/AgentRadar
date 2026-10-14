@@ -1,9 +1,9 @@
-"""AgentWatch SDK configuration."""
+"""AgentRadar SDK configuration."""
 
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 DEFAULT_ENDPOINT = "http://localhost:8000"
@@ -33,20 +33,20 @@ class Config:
         **kwargs: object,
     ) -> "Config":
         """Create a Config, falling back to environment variables."""
-        resolved_key = api_key or os.environ.get("AGENTWATCH_API_KEY", "")
+        resolved_key = api_key or os.environ.get("AGENTRADAR_API_KEY", "")
         resolved_endpoint = (
             endpoint
-            or os.environ.get("AGENTWATCH_ENDPOINT", DEFAULT_ENDPOINT)
+            or os.environ.get("AGENTRADAR_ENDPOINT", DEFAULT_ENDPOINT)
         )
         return cls(api_key=resolved_key, endpoint=resolved_endpoint, **kwargs)
 
     def __post_init__(self) -> None:
-        from agentwatch.exceptions import ConfigurationError
+        from agentradar.exceptions import ConfigurationError
 
         if not self.api_key:
             raise ConfigurationError(
                 "api_key is required. Pass it explicitly or set the "
-                "AGENTWATCH_API_KEY environment variable."
+                "AGENTRADAR_API_KEY environment variable."
             )
         # Normalise endpoint — strip trailing slash
         self.endpoint = self.endpoint.rstrip("/")

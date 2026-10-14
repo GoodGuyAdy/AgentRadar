@@ -1,17 +1,17 @@
-"""Tests for the AgentWatch Python SDK."""
+"""Tests for the AgentRadar Python SDK."""
 
 from __future__ import annotations
 
 import json
+
+import httpx
 import pytest
 import respx
-import httpx
-from unittest.mock import patch
 
-from agentwatch import AgentWatch, AgentRun, EventType
-from agentwatch.exceptions import AuthenticationError, APIError, ConfigurationError
-from agentwatch.events import build_event, RunStatus
-from agentwatch.config import Config
+from agentradar import AgentRadar, AgentRun, EventType
+from agentradar.config import Config
+from agentradar.events import RunStatus, build_event
+from agentradar.exceptions import APIError, AuthenticationError, ConfigurationError
 
 
 # ---------------------------------------------------------------------------
@@ -30,8 +30,8 @@ def test_config_strips_trailing_slash():
 
 
 def test_config_from_env(monkeypatch):
-    monkeypatch.setenv("AGENTWATCH_API_KEY", "env_key")
-    monkeypatch.setenv("AGENTWATCH_ENDPOINT", "http://remote:9000")
+    monkeypatch.setenv("AGENTRADAR_API_KEY", "env_key")
+    monkeypatch.setenv("AGENTRADAR_ENDPOINT", "http://remote:9000")
     c = Config.from_env()
     assert c.api_key == "env_key"
     assert c.endpoint == "http://remote:9000"
@@ -95,7 +95,7 @@ def test_build_event_optional_fields():
 
 
 # ---------------------------------------------------------------------------
-# AgentWatch client + AgentRun tests
+# AgentRadar client + AgentRun tests
 # ---------------------------------------------------------------------------
 
 
@@ -105,7 +105,7 @@ def test_start_run_sends_events():
         return_value=httpx.Response(200, json={"accepted": 2})
     )
 
-    aw = AgentWatch(api_key="aw_test_key", endpoint="http://localhost:8000")
+    aw = AgentRadar(api_key="aw_test_key", endpoint="http://localhost:8000")
     with aw.start_run(agent_name="TestAgent") as run:
         run.log_tool_call(name="search", input={"q": "hello"})
 
@@ -126,7 +126,7 @@ def test_run_marks_failed_on_exception():
         return_value=httpx.Response(200, json={"accepted": 3})
     )
 
-    aw = AgentWatch(api_key="aw_test_key", endpoint="http://localhost:8000")
+    aw = AgentRadar(api_key="aw_test_key", endpoint="http://localhost:8000")
     with pytest.raises(ValueError):
         with aw.start_run(agent_name="TestAgent") as run:
             raise ValueError("boom")
@@ -141,14 +141,14 @@ def test_authentication_error_on_401():
         return_value=httpx.Response(401, json={"detail": "Unauthorized"})
     )
 
-    aw = AgentWatch(api_key="bad_key", endpoint="http://localhost:8000")
+    aw = AgentRadar(api_key="bad_key", endpoint="http://localhost:8000")
     with pytest.raises(AuthenticationError):
         aw._send_batch([{"event_type": "run_started", "run_id": "x"}])
 
 
 @respx.mock
 def test_no_op_when_disabled():
-    aw = AgentWatch(api_key="aw_key", endpoint="http://localhost:8000", enabled=False)
+    aw = AgentRadar(api_key="aw_key", endpoint="http://localhost:8000", enabled=False)
     with aw.start_run(agent_name="TestAgent") as run:
         run.log_tool_call(name="search")
     # No HTTP calls should have been made
@@ -166,7 +166,7 @@ def test_batch_size_auto_flush():
 
     respx.post("http://localhost:8000/api/v1/events/batch").mock(side_effect=capture)
 
-    aw = AgentWatch(
+    aw = AgentRadar(
         api_key="aw_key",
         endpoint="http://localhost:8000",
         batch_size=3,
@@ -189,7 +189,7 @@ def test_batch_size_auto_flush():
 
 
 def test_log_llm_call_helper():
-    aw = AgentWatch(api_key="aw_key", endpoint="http://localhost:8000", enabled=False)
+    aw = AgentRadar(api_key="aw_key", endpoint="http://localhost:8000", enabled=False)
     run = AgentRun(client=aw, agent_name="Agent")
     # Should not raise even when disabled
     result = run.log_llm_call(
@@ -205,6 +205,6 @@ def test_log_llm_call_helper():
 
 
 def test_context_manager_client():
-    """AgentWatch itself can be used as a context manager."""
-    with AgentWatch(api_key="aw_key", enabled=False) as aw:
+    """AgentRadar itself can be used as a context manager."""
+    with AgentRadar(api_key="aw_key", enabled=False) as aw:
         assert aw.config.enabled is False
