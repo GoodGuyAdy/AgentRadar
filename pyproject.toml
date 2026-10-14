@@ -1,0 +1,54 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agentwatch"
+version = "0.1.0"
+description = "AI agent observability SDK — track runs, LLM calls, tool calls, and errors."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "AgentWatch", email = "sdk@agentwatch.dev" }]
+keywords = ["ai", "agents", "observability", "llm", "monitoring", "tracing"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Typing :: Typed",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.27.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "respx>=0.21",
+    "hatch>=1.12",
+]
+
+[project.urls]
+Homepage = "https://agentwatch.dev"
+Documentation = "https://docs.agentwatch.dev"
+Repository = "https://github.com/agentwatch/agentwatch-python"
+Issues = "https://github.com/agentwatch/agentwatch-python/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agentwatch"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+
+[tool.mypy]
+strict = true
+files = ["src"]
