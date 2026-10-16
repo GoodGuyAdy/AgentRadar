@@ -8,8 +8,8 @@ import time
 
 from agentradar import AgentRadar
 
-aw = AgentRadar(
-    api_key="aw_live_your_key_here",
+ar = AgentRadar(
+    api_key="ar_live_your_key_here",
     endpoint="http://localhost:8000",
     include_payloads=True,
 )
@@ -27,14 +27,15 @@ def run_scenario(scenario: str) -> None:
     print(f"  Running scenario: {scenario}")
 
     if scenario == "successful_support":
-        with aw.start_run("CustomerSupportAgent", input={"question": "Track my order"}) as run:
+        with ar.start_run("CustomerSupportAgent", input={"question": "Track my order"}) as run:
             run.log_llm_call(model_name="sim-model", provider="simulator", duration_ms=400.0)
-            run.log_tool_call(name="track_order", input={"id": "ORD-001"})
-            run.log_tool_result(name="track_order", output={"status": "delivered"}, duration_ms=80.0)
+            with run.track_tool("track_order", input={"id": "ORD-001"}) as tool:
+                time.sleep(0.05)
+                tool.set_output({"status": "delivered"})
             run.log_llm_call(model_name="sim-model", provider="simulator", duration_ms=300.0)
 
     elif scenario == "failed_tool_call":
-        with aw.start_run("OrderAgent", input={"order_id": "ORD-999"}) as run:
+        with ar.start_run("OrderAgent", input={"order_id": "ORD-999"}) as run:
             run.log_tool_call(name="fetch_order", input={"id": "ORD-999"})
             run.log_error(
                 error_type="ToolError",
@@ -44,7 +45,7 @@ def run_scenario(scenario: str) -> None:
 
     elif scenario == "llm_exception":
         try:
-            with aw.start_run("AnalysisAgent") as run:
+            with ar.start_run("AnalysisAgent") as run:
                 run.log_llm_call(model_name="sim-model", provider="simulator", duration_ms=200.0)
                 raise RuntimeError("Simulated LLM rate-limit error")
         except RuntimeError:
@@ -52,14 +53,14 @@ def run_scenario(scenario: str) -> None:
 
     elif scenario == "multi_tool":
         tools = ["search_db", "fetch_user", "calculate_price", "send_email"]
-        with aw.start_run("WorkflowAgent", input={"task": "process_order"}) as run:
-            for tool in tools:
-                run.log_tool_call(name=tool, input={"step": tool})
-                time.sleep(0.01)
-                run.log_tool_result(name=tool, output={"ok": True}, duration_ms=50.0)
+        with ar.start_run("WorkflowAgent", input={"task": "process_order"}) as run:
+            for tool_name in tools:
+                with run.track_tool(tool_name, input={"step": tool_name}) as tool:
+                    time.sleep(0.01)
+                    tool.set_output({"ok": True})
 
     elif scenario == "slow_run":
-        with aw.start_run("SlowAgent", input={"query": "complex analysis"}) as run:
+        with ar.start_run("SlowAgent", input={"query": "complex analysis"}) as run:
             run.log_llm_call(model_name="big-model", provider="simulator", duration_ms=3500.0)
             run.log_tool_call(name="heavy_computation")
             time.sleep(0.05)  # simulate real wait

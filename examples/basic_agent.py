@@ -3,17 +3,18 @@
 
 from agentradar import AgentRadar
 
-aw = AgentRadar(
-    api_key="aw_live_your_key_here",
+# Initialize AgentRadar SDK
+ar = AgentRadar(
+    api_key="ar_live_your_key_here",
     endpoint="http://localhost:8000",
     include_payloads=True,
 )
 
-with aw.start_run(
+with ar.start_run(
     agent_name="CustomerSupportAgent",
     input={"question": "Where is my order?"},
 ) as run:
-    # Simulate an LLM call
+    # 1. Simulate an LLM call
     run.log_llm_call(
         model_name="gpt-4o",
         provider="openai",
@@ -23,15 +24,11 @@ with aw.start_run(
         token_usage={"prompt_tokens": 42, "completion_tokens": 15},
     )
 
-    # Simulate a tool call
-    run.log_tool_call(name="search_orders", input={"order_id": "ORD-123"})
-    run.log_tool_result(
-        name="search_orders",
-        output={"status": "shipped", "eta": "2026-10-15"},
-        duration_ms=120.0,
-    )
+    # 2. Simulate a tool call with context manager
+    with run.track_tool("search_orders", input={"order_id": "ORD-123"}) as tool:
+        tool.set_output({"status": "shipped", "eta": "2026-10-15"})
 
-    # Second LLM call with the tool result
+    # 3. Final LLM response
     run.log_llm_call(
         model_name="gpt-4o",
         provider="openai",

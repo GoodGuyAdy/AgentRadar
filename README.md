@@ -1,17 +1,17 @@
-# agentradar — Python SDK
+# agent-radar — Python SDK
 
-[![PyPI version](https://badge.fury.io/py/agentradar.svg)](https://pypi.org/project/agentradar/)
+[![PyPI version](https://badge.fury.io/py/agent-radar.svg)](https://pypi.org/project/agent-radar/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**AI agent observability — track runs, LLM calls, tool calls, errors, and performance metrics in your AgentRadar dashboard.**
+**AI agent observability SDK — track runs, LLM executions, tool calls, errors, latency, and performance metrics in your AgentRadar dashboard.**
 
 ---
 
 ## Installation
 
 ```bash
-pip install agentradar
+pip install agent-radar
 ```
 
 ## Quick Start
@@ -19,16 +19,16 @@ pip install agentradar
 ```python
 from agentradar import AgentRadar
 
-aw = AgentRadar(
-    api_key="aw_live_your_key_here",
+ar = AgentRadar(
+    api_key="ar_live_your_key_here",
     endpoint="http://localhost:8000",  # your AgentRadar platform URL
 )
 
-with aw.start_run(
+with ar.start_run(
     agent_name="CustomerSupportAgent",
     input={"question": "Where is my order?"},
 ) as run:
-    # Log an LLM call
+    # 1. Log an LLM call
     run.log_llm_call(
         model_name="gpt-4o",
         provider="openai",
@@ -36,61 +36,94 @@ with aw.start_run(
         token_usage={"prompt_tokens": 42, "completion_tokens": 15},
     )
 
-    # Log a tool call and its result
-    run.log_tool_call(name="search_orders", input={"order_id": "123"})
-    run.log_tool_result(
-        name="search_orders",
-        output={"status": "shipped"},
-        duration_ms=120.0,
-    )
-```
-
-## API Key Configuration
-
-Get your API key from the AgentRadar dashboard under **Settings → API Keys**.
-
-```python
-# Option 1: Pass directly
-aw = AgentRadar(api_key="aw_live_...")
-
-# Option 2: Environment variable
-# export AGENTRADAR_API_KEY=aw_live_...
-aw = AgentRadar()
-```
-
-## Tracking a Run
-
-```python
-with aw.start_run(agent_name="MyAgent", input={"task": "..."}) as run:
-    # Your agent code here
-    run.log_event(
-        event_type="tool_call",
-        name="my_tool",
-        input={"key": "value"},
-    )
+    # 2. Track a tool call (with automatic duration measurement)
+    with run.track_tool("search_orders", input={"order_id": "123"}) as tool:
+        tool.set_output({"status": "shipped", "carrier": "FedEx"})
 ```
 
 The run is automatically marked **success** on clean exit, or **failed** if an exception escapes the `with` block.
 
-## Logging Events
+---
 
-### LLM Calls
+## API Key Configuration
+
+Get your API key from the AgentRadar dashboard under **Settings → API Keys**. Keys are prefixed with `ar_live_`.
+
+```python
+# Option 1: Pass directly
+ar = AgentRadar(api_key="ar_live_...")
+
+# Option 2: Environment variable (AGENTRADAR_API_KEY or AR_API_KEY)
+# export AGENTRADAR_API_KEY=ar_live_...
+ar = AgentRadar()
+```
+
+---
+
+## Asynchronous Agents (`AsyncAgentRadar`)
+
+For async agent frameworks (LangChain, AutoGen, CrewAI, FastAPI):
+
+```python
+import asyncio
+from agentradar import AsyncAgentRadar
+
+async def main():
+    async with AsyncAgentRadar(api_key="ar_live_...") as ar:
+        async with ar.start_run("ResearchAgent", input={"topic": "Agent observability"}) as run:
+            run.log_llm_call(model_name="claude-3-5-sonnet", provider="anthropic", duration_ms=450.0)
+            with run.track_tool("web_search", input={"q": "Observability"}) as tool:
+                tool.set_output({"count": 10})
+
+asyncio.run(main())
+```
+
+---
+
+## Tracking Tool Calls & LLM Calls
+
+### Convenience Context Managers
+
+#### Tool Calls (`run.track_tool`)
+Automatically starts timer, logs `tool_call`, catches exceptions (logging `error`), and logs `tool_result` with duration:
+
+```python
+with run.track_tool("database_query", input={"user_id": 42}) as tool:
+    result = db.query(user_id=42)
+    tool.set_output(result)
+```
+
+#### LLM Reasoning (`run.track_llm`)
+```python
+with run.track_llm(model_name="gpt-4o", provider="openai", input={"prompt": "Summarize"}) as llm:
+    completion = openai_client.chat.completions.create(...)
+    llm.set_result(
+        output={"text": completion.choices[0].message.content},
+        token_usage={"prompt_tokens": 100, "completion_tokens": 50},
+    )
+```
+
+### Manual Logging Helpers
+
+#### LLM Call
 ```python
 run.log_llm_call(
     model_name="claude-3-5-sonnet",
     provider="anthropic",
+    input={"prompt": "..."},
+    output={"response": "..."},
     duration_ms=1200.0,
     token_usage={"prompt_tokens": 100, "completion_tokens": 50},
 )
 ```
 
-### Tool Calls
+#### Tool Call & Result
 ```python
 run.log_tool_call(name="web_search", input={"query": "latest AI news"})
-run.log_tool_result(name="web_search", output={"results": [...]})
+run.log_tool_result(name="web_search", output={"results": [...]}, duration_ms=350.0)
 ```
 
-### Errors
+#### Error Logging
 ```python
 run.log_error(
     error_type="ToolTimeoutError",
@@ -99,100 +132,107 @@ run.log_error(
 )
 ```
 
-### Custom Events
+#### Custom Events
 ```python
-run.log_event(
-    event_type="custom_event",
-    name="my_event",
-    metadata={"key": "value"},
+run.log_custom_event(
+    name="workflow_checkpoint",
+    metadata={"step": 2, "state": "validating"},
 )
 ```
 
-## Configuration
+---
 
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `api_key` | `$AGENTRADAR_API_KEY` | Your project API key |
-| `endpoint` | `$AGENTRADAR_ENDPOINT` or `http://localhost:8000` | AgentRadar platform URL |
-| `timeout` | `10.0` | HTTP request timeout in seconds |
-| `max_retries` | `3` | Max retries for transient failures |
-| `batch_size` | `50` | Events per batch (auto-flush trigger) |
-| `enabled` | `True` | Set `False` to disable all telemetry |
-| `include_payloads` | `False` | Send input/output content (may contain PII) |
+## Manual Run Lifecycle (Without Context Manager)
 
-## Batching and Flushing
+If you need manual control over run boundaries:
 
-Events are collected in memory and flushed:
-- **Automatically** when the run context manager exits.
-- **Automatically** when the buffer reaches `batch_size`.
-- **Manually** via `aw.flush()`.
+```python
+run = ar.start_run(agent_name="PipelineAgent", input={"batch_id": 99})
+run.start()
 
-> **⚠ Delivery Guarantee**: The SDK makes a best-effort attempt to deliver events. It does **not** implement durable on-disk buffering. If the process crashes before `flush()` is called, buffered events will be lost.
+# Do agent work...
+run.log_tool_call(name="process_item")
 
-## Privacy Options
+run.finish(status="success")  # or status="failed"
+ar.flush()
+```
 
-By default, `input` and `output` payloads are **not sent** to protect sensitive data.
+---
+
+## Single Event Ingestion & Health Check
+
+```python
+# Check backend health
+status = ar.check_health()
+print(f"Backend status: {status.status}, version: {status.version}")
+
+# Direct single-event ingestion
+ar.send_event({
+    "event_id": "...",
+    "run_id": "...",
+    "agent_name": "...",
+    "event_type": "custom",
+    "timestamp": "2026-10-16T12:00:00Z"
+})
+```
+
+---
+
+## Configuration Options
+
+| Parameter | Default | Environment Variable | Description |
+|-----------|---------|----------------------|-------------|
+| `api_key` | `""` | `AGENTRADAR_API_KEY`, `AR_API_KEY` | Your project API key (`ar_live_...`) |
+| `endpoint` | `http://localhost:8000` | `AGENTRADAR_ENDPOINT`, `AR_ENDPOINT` | AgentRadar platform backend URL |
+| `auth_token` | `None` | `AGENTRADAR_AUTH_TOKEN`, `AR_AUTH_TOKEN` | Optional Bearer JWT for platform API access |
+| `timeout` | `10.0` | — | HTTP request timeout in seconds |
+| `max_retries` | `3` | — | Max retries for transient 5xx/network errors |
+| `batch_size` | `50` | — | Events per batch (auto-flush trigger) |
+| `enabled` | `True` | — | Set `False` to disable all telemetry |
+| `include_payloads` | `False` | — | Send input/output content (may contain PII) |
+
+---
+
+## Privacy & Payload Gating
+
+By default, `input` and `output` payloads are **not sent** to protect sensitive user data and credentials.
 
 ```python
 # Enable payload capture (only if your data is safe to transmit)
-aw = AgentRadar(api_key="...", include_payloads=True)
+ar = AgentRadar(api_key="ar_live_...", include_payloads=True)
 ```
 
-## Disabling Telemetry
+---
 
-```python
-aw = AgentRadar(api_key="...", enabled=False)
-```
+## Error Handling & Resilience
 
-All SDK calls become no-ops; no network requests are made.
-
-## Error Handling
+The SDK automatically retries on transient network errors and server errors (`500`, `502`, `503`, `504`) with exponential backoff:
 
 ```python
 from agentradar.exceptions import AuthenticationError, APIError, NetworkError
 
 try:
-    aw.flush()
+    ar.flush()
 except AuthenticationError:
-    print("Invalid API key")
+    print("Invalid or revoked API key")
 except APIError as e:
-    print(f"API error {e.status_code}: {e}")
+    print(f"API error ({e.status_code}): {e}")
 except NetworkError:
-    print("Could not reach AgentRadar backend")
+    print("Could not reach AgentRadar backend after retries")
 ```
 
-## Troubleshooting
+---
 
-**`ConfigurationError: api_key is required`**
-→ Pass `api_key=` or set `AGENTRADAR_API_KEY`.
-
-**`AuthenticationError`**
-→ Check that your API key is correct and hasn't been revoked.
-
-**Events not appearing in dashboard**
-→ Call `aw.flush()` explicitly or ensure the run context manager has exited.
-
-## Local Development
+## Local Development & Testing
 
 ```bash
-git clone https://github.com/agentradar/agentradar-python
-cd agentradar-python
+git clone https://github.com/GoodGuyAdy/AgentRadar
+cd AgentRadar
 pip install -e ".[dev]"
 pytest
 ```
 
-## Publishing to PyPI
-
-> **Note**: Check that the `agentradar` package name is available on PyPI before publishing.
-
-```bash
-pip install build twine
-python -m build
-twine check dist/*
-twine upload dist/*          # TestPyPI first: twine upload --repository testpypi dist/*
-```
-
-A GitHub Actions workflow at `.github/workflows/release.yml` handles CI and PyPI Trusted Publishing.
+---
 
 ## License
 

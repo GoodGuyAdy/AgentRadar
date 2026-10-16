@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "agentradar"
+name = "agent-radar"
 version = "0.1.0"
 description = "AI agent observability SDK — track runs, LLM calls, tool calls, and errors."
 readme = "README.md"
@@ -11,7 +11,7 @@ license = { text = "MIT" }
 authors = [{ name = "AgentRadar", email = "sdk@agentradar.dev" }]
 keywords = ["ai", "agents", "observability", "llm", "monitoring", "tracing"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
@@ -19,6 +19,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Typing :: Typed",
@@ -37,13 +38,13 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://agentradar.dev"
-Documentation = "https://docs.agentradar.dev"
-Repository = "https://github.com/agentradar/agentradar-python"
-Issues = "https://github.com/agentradar/agentradar-python/issues"
+Homepage = "https://agent-radar.in"
+Documentation = "https://agent-radar.in"
+Repository = "https://github.com/GoodGuyAdy/AgentRadar"
+Issues = "https://github.com/GoodGuyAdy/AgentRadar/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/agentradar"]
+packages = ["src/agentradar", "src/agent_radar"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
