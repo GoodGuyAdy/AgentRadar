@@ -39,7 +39,7 @@ dev = [
 
 [project.urls]
 Homepage = "https://agent-radar.in"
-Documentation = "https://agent-radar.in"
+Documentation = "https://api.agent-radar.in/docs"
 Repository = "https://github.com/GoodGuyAdy/AgentRadar"
 Issues = "https://github.com/GoodGuyAdy/AgentRadar/issues"
 

@@ -22,7 +22,7 @@ from agentradar import (
     IngestionResult,
     HealthStatus,
 )
-from agentradar.config import Config
+from agentradar.config import Config, DEFAULT_ENDPOINT
 from agentradar.events import _ensure_dict, build_event
 from agentradar.exceptions import (
     APIError,
@@ -40,6 +40,12 @@ from agentradar.exceptions import (
 def test_config_requires_api_key():
     with pytest.raises(ConfigurationError):
         Config(api_key="")
+
+
+def test_config_default_endpoint():
+    c = Config(api_key="ar_key")
+    assert c.endpoint == "https://api.agent-radar.in"
+    assert DEFAULT_ENDPOINT == "https://api.agent-radar.in"
 
 
 def test_config_strips_trailing_slash():

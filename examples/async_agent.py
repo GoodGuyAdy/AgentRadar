@@ -7,7 +7,7 @@ from agentradar import AsyncAgentRadar
 async def main():
     async with AsyncAgentRadar(
         api_key="ar_live_your_key_here",
-        endpoint="http://localhost:8000",
+        endpoint="https://api.agent-radar.in",
         include_payloads=True,
     ) as ar:
         # Check health

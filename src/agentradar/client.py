@@ -29,7 +29,7 @@ class AgentRadar:
 
     Example::
 
-        ar = AgentRadar(api_key="ar_live_...", endpoint="http://localhost:8000")
+        ar = AgentRadar(api_key="ar_live_...", endpoint="https://api.agent-radar.in")
 
         with ar.start_run(agent_name="SupportAgent", input={"q": "hello"}) as run:
             run.log_tool_call(name="search", input={"query": "hello"})

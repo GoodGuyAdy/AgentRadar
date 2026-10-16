@@ -6,7 +6,7 @@ from agentradar import AgentRadar
 # Initialize AgentRadar SDK
 ar = AgentRadar(
     api_key="ar_live_your_key_here",
-    endpoint="http://localhost:8000",
+    endpoint="https://api.agent-radar.in",
     include_payloads=True,
 )
 

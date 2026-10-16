@@ -6,7 +6,7 @@ import os
 from dataclasses import dataclass
 
 
-DEFAULT_ENDPOINT = "http://localhost:8000"
+DEFAULT_ENDPOINT = "https://api.agent-radar.in"
 DEFAULT_TIMEOUT = 10.0  # seconds
 DEFAULT_MAX_RETRIES = 3
 DEFAULT_BATCH_SIZE = 50

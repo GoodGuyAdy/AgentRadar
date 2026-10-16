@@ -21,7 +21,7 @@ from agentradar import AgentRadar
 
 ar = AgentRadar(
     api_key="ar_live_your_key_here",
-    endpoint="http://localhost:8000",  # your AgentRadar platform URL
+    # endpoint defaults to "https://api.agent-radar.in"
 )
 
 with ar.start_run(
@@ -47,7 +47,9 @@ The run is automatically marked **success** on clean exit, or **failed** if an e
 
 ## API Key Configuration
 
-Get your API key from the AgentRadar dashboard under **Settings → API Keys**. Keys are prefixed with `ar_live_`.
+Get your API key from the AgentRadar dashboard at [https://agent-radar.in](https://agent-radar.in) under **Settings → API Keys**. Keys are prefixed with `ar_live_`.
+
+For interactive OpenAPI/Swagger reference, visit [https://api.agent-radar.in/docs](https://api.agent-radar.in/docs).
 
 ```python
 # Option 1: Pass directly
@@ -183,7 +185,7 @@ ar.send_event({
 | Parameter | Default | Environment Variable | Description |
 |-----------|---------|----------------------|-------------|
 | `api_key` | `""` | `AGENTRADAR_API_KEY`, `AR_API_KEY` | Your project API key (`ar_live_...`) |
-| `endpoint` | `http://localhost:8000` | `AGENTRADAR_ENDPOINT`, `AR_ENDPOINT` | AgentRadar platform backend URL |
+| `endpoint` | `https://api.agent-radar.in` | `AGENTRADAR_ENDPOINT`, `AR_ENDPOINT` | AgentRadar platform backend URL |
 | `auth_token` | `None` | `AGENTRADAR_AUTH_TOKEN`, `AR_AUTH_TOKEN` | Optional Bearer JWT for platform API access |
 | `timeout` | `10.0` | — | HTTP request timeout in seconds |
 | `max_retries` | `3` | — | Max retries for transient 5xx/network errors |
