@@ -495,11 +495,17 @@ def test_real_backend_integration():
 
 
 def test_agent_radar_alias_import():
-    """Verify that both `import agent_radar` and `import agentradar` work seamlessly."""
+    """Verify that `import agent_radar`, `import agentradar_sdk`, and `import agentradar` work seamlessly."""
     import agent_radar
+    import agentradar_sdk
 
     assert hasattr(agent_radar, "AgentRadar")
     assert hasattr(agent_radar, "AsyncAgentRadar")
     assert agent_radar.AgentRadar is AgentRadar
     assert agent_radar.__version__ == "0.1.0"
+
+    assert hasattr(agentradar_sdk, "AgentRadar")
+    assert hasattr(agentradar_sdk, "AsyncAgentRadar")
+    assert agentradar_sdk.AgentRadar is AgentRadar
+    assert agentradar_sdk.__version__ == "0.1.0"
 

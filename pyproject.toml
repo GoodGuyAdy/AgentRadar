@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "agent-radar"
+name = "agentradar-sdk"
 version = "0.1.0"
 description = "AI agent observability SDK — track runs, LLM calls, tool calls, and errors."
 readme = "README.md"
@@ -44,7 +44,7 @@ Repository = "https://github.com/GoodGuyAdy/AgentRadar"
 Issues = "https://github.com/GoodGuyAdy/AgentRadar/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/agentradar", "src/agent_radar"]
+packages = ["src/agentradar", "src/agent_radar", "src/agentradar_sdk"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

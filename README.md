@@ -1,6 +1,6 @@
-# agent-radar — Python SDK
+# agentradar-sdk — Python SDK
 
-[![PyPI version](https://badge.fury.io/py/agent-radar.svg)](https://pypi.org/project/agent-radar/)
+[![PyPI version](https://badge.fury.io/py/agentradar-sdk.svg)](https://pypi.org/project/agentradar-sdk/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -11,7 +11,7 @@
 ## Installation
 
 ```bash
-pip install agent-radar
+pip install agentradar-sdk
 ```
 
 ## Quick Start
