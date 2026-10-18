@@ -60,6 +60,7 @@ def init(
     include_payloads: bool = False,
     agent_name: str | None = None,
     service_name: str | None = None,
+    metadata: dict[str, Any] | None = None,
     enabled: bool = True,
     **opts: Any,
 ) -> None:
@@ -109,6 +110,7 @@ def init(
                 include_payloads=include_payloads,
                 agent_name=agent_name,
                 service_name=service_name,
+                metadata=metadata,
                 **opts,
             )
             _initialized = True
@@ -161,6 +163,7 @@ def _do_init(
     include_payloads: bool,
     agent_name: str | None = None,
     service_name: str | None = None,
+    metadata: dict[str, Any] | None = None,
     **opts: Any,
 ) -> None:
     """Actual setup — called once, inside the lock, exceptions bubble up."""
@@ -245,7 +248,16 @@ def _do_init(
         )
     else:
         # No provider yet — create one and set it as the global
-        resource = Resource.create({SERVICE_NAME: resolved_service})
+        import json
+        resource_attrs: dict[str, Any] = {SERVICE_NAME: resolved_service}
+        if metadata:
+            for k, v in metadata.items():
+                if isinstance(v, (str, bool, int, float)):
+                    resource_attrs[f"metadata.{k}"] = v
+                else:
+                    resource_attrs[f"metadata.{k}"] = json.dumps(v)
+            resource_attrs["metadata"] = json.dumps(metadata)
+        resource = Resource.create(resource_attrs)
         provider = TracerProvider(resource=resource)
         provider.add_span_processor(active_processor)
         otel_trace.set_tracer_provider(provider)

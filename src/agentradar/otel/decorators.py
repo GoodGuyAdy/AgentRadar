@@ -35,6 +35,7 @@ def agent(
     name_or_func: str | Callable[..., Any] | None = None,
     *,
     name: str | None = None,
+    metadata: dict[str, Any] | None = None,
 ) -> Any:
     """Decorator to trace an agent function or method.
 
@@ -43,7 +44,7 @@ def agent(
         def my_agent(prompt: str) -> str:
             ...
 
-        @agent("ResearchAssistant")
+        @agent("ResearchAssistant", metadata={"version": "1.0"})
         async def run_assistant(query: str):
             ...
     """
@@ -60,6 +61,8 @@ def agent(
                     span.set_attribute("openinference.span.kind", "AGENT")
                     span.set_attribute("agent.name", agent_name)
                     span.set_attribute("gen_ai.agent.name", agent_name)
+                    if metadata:
+                        span.set_attribute("metadata", _safe_serialize(metadata))
                     if args or kwargs:
                         call_input = {"args": args, "kwargs": kwargs} if kwargs else list(args)
                         span.set_attribute("input.value", _safe_serialize(call_input))
@@ -85,6 +88,8 @@ def agent(
                     span.set_attribute("openinference.span.kind", "AGENT")
                     span.set_attribute("agent.name", agent_name)
                     span.set_attribute("gen_ai.agent.name", agent_name)
+                    if metadata:
+                        span.set_attribute("metadata", _safe_serialize(metadata))
                     if args or kwargs:
                         call_input = {"args": args, "kwargs": kwargs} if kwargs else list(args)
                         span.set_attribute("input.value", _safe_serialize(call_input))
@@ -110,6 +115,7 @@ def tool(
     name_or_func: str | Callable[..., Any] | None = None,
     *,
     name: str | None = None,
+    metadata: dict[str, Any] | None = None,
 ) -> Any:
     """Decorator to trace a tool function or method.
 
@@ -118,7 +124,7 @@ def tool(
         def calculate(expression: str) -> float:
             ...
 
-        @tool("web_search")
+        @tool("web_search", metadata={"category": "search"})
         async def search(query: str):
             ...
     """
@@ -135,6 +141,8 @@ def tool(
                     span.set_attribute("openinference.span.kind", "TOOL")
                     span.set_attribute("tool.name", tool_name)
                     span.set_attribute("gen_ai.tool.name", tool_name)
+                    if metadata:
+                        span.set_attribute("metadata", _safe_serialize(metadata))
                     if args or kwargs:
                         call_input = {"args": args, "kwargs": kwargs} if kwargs else list(args)
                         span.set_attribute("input.value", _safe_serialize(call_input))
@@ -160,6 +168,8 @@ def tool(
                     span.set_attribute("openinference.span.kind", "TOOL")
                     span.set_attribute("tool.name", tool_name)
                     span.set_attribute("gen_ai.tool.name", tool_name)
+                    if metadata:
+                        span.set_attribute("metadata", _safe_serialize(metadata))
                     if args or kwargs:
                         call_input = {"args": args, "kwargs": kwargs} if kwargs else list(args)
                         span.set_attribute("input.value", _safe_serialize(call_input))
