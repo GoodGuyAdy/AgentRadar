@@ -9,7 +9,7 @@ description = "AI agent observability SDK — track runs, LLM calls, tool calls,
 readme = "README.md"
 license = { text = "MIT" }
 authors = [{ name = "AgentRadar", email = "sdk@agentradar.dev" }]
-keywords = ["ai", "agents", "observability", "llm", "monitoring", "tracing"]
+keywords = ["ai", "agents", "observability", "llm", "monitoring", "tracing", "opentelemetry"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -27,9 +27,34 @@ classifiers = [
 requires-python = ">=3.10"
 dependencies = [
     "httpx>=0.27.0",
+    "opentelemetry-api>=1.24.0",
+    "opentelemetry-sdk>=1.24.0",
+    "opentelemetry-exporter-otlp-proto-http>=1.24.0",
 ]
 
 [project.optional-dependencies]
+openai = [
+    "openinference-instrumentation-openai>=0.1.0",
+]
+anthropic = [
+    "openinference-instrumentation-anthropic>=0.1.0",
+]
+langchain = [
+    "openinference-instrumentation-langchain>=0.1.0",
+]
+crewai = [
+    "openinference-instrumentation-crewai>=0.1.0",
+]
+llamaindex = [
+    "openinference-instrumentation-llama-index>=0.1.0",
+]
+all = [
+    "openinference-instrumentation-openai>=0.1.0",
+    "openinference-instrumentation-anthropic>=0.1.0",
+    "openinference-instrumentation-langchain>=0.1.0",
+    "openinference-instrumentation-crewai>=0.1.0",
+    "openinference-instrumentation-llama-index>=0.1.0",
+]
 dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.23",

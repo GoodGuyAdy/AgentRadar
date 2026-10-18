@@ -21,6 +21,11 @@ from agentradar import (  # noqa: F401
     RunDetail,
     EventDetail,
     AnalyticsSummary,
+    init,
+    shutdown,
+    flush,
+    agent,
+    tool,
     __version__,
 )
 from agentradar import __all__  # noqa: F401

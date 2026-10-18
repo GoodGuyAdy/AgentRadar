@@ -402,6 +402,7 @@ def test_real_backend_integration():
     try:
         from app.core import config as _cfg_mod
         _cfg_mod.settings.database_url = f"sqlite:///{test_db}"
+        _cfg_mod.settings.require_email_verification = False
 
         from sqlalchemy import create_engine
         from sqlalchemy.orm import sessionmaker

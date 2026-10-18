@@ -18,6 +18,8 @@ from agentradar.models import (
     RunDetail,
     RunSummary,
 )
+from agentradar.otel.init import flush, init, shutdown
+from agentradar.otel.decorators import agent, tool
 
 __version__ = "0.1.0"
 __all__ = [
@@ -38,4 +40,9 @@ __all__ = [
     "RunDetail",
     "EventDetail",
     "AnalyticsSummary",
+    "init",
+    "shutdown",
+    "flush",
+    "agent",
+    "tool",
 ]
