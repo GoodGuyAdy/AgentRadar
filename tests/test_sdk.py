@@ -389,8 +389,17 @@ async def test_async_check_health():
 
 def test_real_backend_integration():
     """Verify SDK compatibility with the actual main app FastAPI application."""
-    main_app_backend = r"c:\Users\adity\OneDrive\Documents\AgentRadarPrivate\AgentRadar-private\backend"
-    if not os.path.exists(main_app_backend):
+    backend_candidates = [
+        os.environ.get("AGENTRADAR_BACKEND_PATH"),
+        os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "..", "AgentRadarPrivate", "AgentRadar-private", "backend")
+        ),
+        os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "AgentRadar-private", "backend")
+        ),
+    ]
+    main_app_backend = next((p for p in backend_candidates if p and os.path.exists(p)), None)
+    if not main_app_backend:
         pytest.skip("Main app backend path not found")
 
     if main_app_backend not in sys.path:
