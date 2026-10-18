@@ -64,7 +64,8 @@ def test_init_missing_api_key_raises_or_logs(monkeypatch):
     for key in ["AGENTRADAR_API_KEY", "AR_API_KEY", "AGENT_RADAR_API_KEY"]:
         monkeypatch.delenv(key, raising=False)
 
-    with patch("agentradar.otel.init.logger.warning") as mock_warn:
+    init_mod = sys.modules["agentradar.otel.init"]
+    with patch.object(init_mod.logger, "warning") as mock_warn:
         init(api_key=None)
         assert mock_warn.called
         assert "OTel setup failed" in mock_warn.call_args[0][0]
