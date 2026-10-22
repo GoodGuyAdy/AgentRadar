@@ -4,11 +4,11 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agentradar-sdk"
-version = "0.2.3"
+version = "0.2.4"
 description = "AI agent observability SDK — track runs, LLM calls, tool calls, and errors."
 readme = "README.md"
 license = { text = "MIT" }
-authors = [{ name = "AgentRadar", email = "sdk@agentradar.dev" }]
+authors = [{ name = "Aditya Dubey", email = "adityadubey477@gmail.com" }]
 keywords = ["ai", "agents", "observability", "llm", "monitoring", "tracing", "opentelemetry"]
 classifiers = [
     "Development Status :: 4 - Beta",
